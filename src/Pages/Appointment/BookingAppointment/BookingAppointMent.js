@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 const BookingAppointMent = ({ treatment, selectedDate,setTreatment,refetch }) => {
   const {user} = useContext(AuthContext)
   const { name:appointmentName, slots,price } = treatment;
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit,formState: { errors } } = useForm();
   const date = format(selectedDate, "PP")
   const handleAppointment = (data) => {
     const newData = {...data,treatment:appointmentName,price:price}
@@ -67,10 +67,11 @@ const BookingAppointMent = ({ treatment, selectedDate,setTreatment,refetch }) =>
             />
             <input
               type="text"
-              {...register('phone')}
+              {...register('phone',{required:"Please enter Your Contact Number"})}
               placeholder="Phone Number"
               className="input w-full input-bordered text-black"
             />
+            {errors.phone && <p role="alert">{errors.phone?.message}</p>}
             <input
               type="email"
               defaultValue={user?.email}

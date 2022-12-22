@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useState } from "react";
+import PrivateRoute from "../../../Routes/PrivateRoute";
 import BookingAppointMent from "../BookingAppointment/BookingAppointMent";
 import AppointmentOptions from "./AppointmentOptions";
+import Loader from '../../../Loader/Loader'
 const AvailableAppointment = ({ selectedDate }) => {
   const [treatment, setTreatment] = useState(null);
-  const { data: appointmentOptions = [],refetch } = useQuery({
+  const { data: appointmentOptions = [],refetch,isLoading } = useQuery({
     queryKey: ["appointmentOptions"],
     queryFn: async () => {
       const res = await fetch(`https://doctors-lab-server.vercel.app/appointmentOptions?date=${format(selectedDate,'PP')}`);
@@ -13,7 +15,9 @@ const AvailableAppointment = ({ selectedDate }) => {
       return data;
     },
   });
-// IF you want to use date , you selected date with format function// 
+if(isLoading){
+  return <Loader/>
+}
   return (
     <div>
       <h4 className="text-xl text-secondary font-bold text-center">
@@ -29,7 +33,7 @@ const AvailableAppointment = ({ selectedDate }) => {
         ))}
       </div>
       {treatment && (
-        <BookingAppointMent treatment={treatment} refetch={refetch} setTreatment={setTreatment} selectedDate={selectedDate} />
+        <PrivateRoute><BookingAppointMent treatment={treatment} refetch={refetch} setTreatment={setTreatment} selectedDate={selectedDate} /></PrivateRoute>
       )}
     </div>
   );

@@ -4,15 +4,17 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../AuthContext/AuthProvider";
 import useToken from "../../hooks/useToken";
+import SmallLoader from "../../Loader/SmallLoader";
 
 const SignUp = () => {
-  const { createUser, updateUserProfile } = useContext(AuthContext);
+  const { createUser, updateUserProfile, loading, setLoading } =
+    useContext(AuthContext);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const [userEmailUpdated,setUserEmailUpdated] = useState('')
-  const [token] = useToken(userEmailUpdated)
-  if(token){
-    navigate('/')
+  const [userEmailUpdated, setUserEmailUpdated] = useState("");
+  const [token] = useToken(userEmailUpdated);
+  if (token) {
+    navigate("/");
   }
   const {
     register,
@@ -31,11 +33,13 @@ const SignUp = () => {
         updateUserProfile(profile)
           .then(() => {
             userDataLoaded(data.name, data.email);
+            setLoading(false);
           })
           .catch((err) => console.log(err));
       })
       .catch((error) => {
         setError(error.message);
+        setLoading(false);
       });
   };
 
@@ -49,14 +53,16 @@ const SignUp = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        toast.success("User Created");
-       setUserEmailUpdated(email);
+        if (data) {
+          toast.success("User Created Successfully");
+          setUserEmailUpdated(email);
+        }
       });
   };
 
   return (
     <div className="h-[500px] flex justify-center items-center">
-      <div className="w-96 p-7 rounded-lg bg-slate-200">
+      <div className="w-96 p-5 rounded-lg ">
         <h1 className="text-3xl font-bold text-center text-black ">Sign Up</h1>
         <form onSubmit={handleSubmit(handleSignUp)} className="">
           <div className="form-control  ">
@@ -110,7 +116,7 @@ const SignUp = () => {
           <input
             className="btn btn-outline w-full text-black mt-3"
             type="submit"
-            value="Sign Up"
+            value={loading ? <SmallLoader /> : "Sign Up"}
           />
         </form>
         {error && <p>{error}</p>}

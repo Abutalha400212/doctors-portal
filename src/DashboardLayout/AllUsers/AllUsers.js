@@ -1,8 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import { useContext } from "react";
 import toast from "react-hot-toast";
+import { AuthContext } from "../../AuthContext/AuthProvider";
+import useAdmin from "../../hooks/useAdmin";
 
 const AllUsers = () => {
+  const {user}= useContext(AuthContext)
+  const [isAdmin] = useAdmin(user?.email)
   const { data: users = [],refetch} = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
@@ -21,6 +26,7 @@ const handleDelete =(user)=>{
   })
   .then(res => res.json())
   .then(data =>{
+    toast.success("User Deleted Successfully")
     refetch()
     console.log(data);
   })
@@ -46,22 +52,22 @@ const handleDelete =(user)=>{
       <div className="overflow-x-auto">
         <table className="table w-full">
           <thead>
-            <tr>
+            <tr className="text-center">
               <th></th>
               <th>Name</th>
               <th>Email</th>
-              <th>Favorite Color</th>
-              <th>Favorite Color</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user, i) => (
-              <tr key={user._id}>
+              <tr className="text-center text-black" key={user._id}>
                 <th>{i + 1}</th>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>
-               {!user.role &&   <button
+               {user.role ? <p className="text-green-700 font-bold">Admin</p>:   <button
                     onClick={() => {
                       handleMakeAdmin(user._id);
                     }}

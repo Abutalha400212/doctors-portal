@@ -6,9 +6,8 @@ import useToken from "../../hooks/useToken";
 import SmallLoader from "../../Loader/SmallLoader";
 
 const Login = () => {
-  const { existUser, googleLogin, loading } = useContext(AuthContext);
+  const { existUser, googleLogin, loading,setLoading } = useContext(AuthContext);
   const [loginUserEmail, setLoginUserEmail] = useState("");
-
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -23,11 +22,10 @@ const Login = () => {
   if (token) {
     navigate(from, { replace: true });
   }
-  const googleSignIn = () => {
+  const googleSignIn =  () => {
     googleLogin()
       .then((result) => {
-        const user = result.user;
-        console.log(user);
+        setLoginUserEmail(result.user.email);
       })
       .catch((err) => console.log(err));
   };
@@ -37,14 +35,15 @@ const Login = () => {
       .then((result) => {
         const user = result.user;
         setLoginUserEmail(user.email);
+        setLoading(false)
       })
       .catch((error) => {
         setError(error.message);
       });
   };
   return (
-    <div className="h-[500px] flex justify-center items-center">
-      <div className="w-96 p-7 rounded-lg bg-slate-200">
+    <div className="h-[500px] flex justify-center items-center text-black">
+      <div className="w-96 p-5 rounded-lg">
         <h1 className="text-3xl font-bold text-center text-black ">Login</h1>
         <form onSubmit={handleSubmit(handleLogin)} className="">
           <div className="form-control  ">
@@ -94,7 +93,7 @@ const Login = () => {
             value={loading ? <SmallLoader /> : "Log in"}
           />
         </form>
-        {error && <p>{error}</p>}
+        {error &&<p className="text-red-600">{error}</p>}
         <p className="text-black text-sm">
           New to Doctors Portal{" "}
           <Link className="text-secondary text-xs" to="/signup">

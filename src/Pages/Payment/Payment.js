@@ -8,13 +8,14 @@ const Payment = () => {
   const data = useLoaderData();
   console.log(data);
   return (
-    <div>
-      <h1>{data.treatment}</h1>
-      <p>
-        Please Pay ${data.price} for your appointment on {data.appointmentDate}{" "}
-        at {data.slot}
+    <div className="">
+      <h1 className="text-black font-semibold mb-2">{data.treatment}</h1>
+      <hr/>
+      <p className="text-black mt-2">
+        Please Pay <span className="font-bold">${data.price}</span> for your appointment on <span className="text-green-800 font-bold">{data.appointmentDate}</span>{" "}
+        at <span className="text-blue-700 font-bold">{data.slot}</span>
       </p>
-      <div className="w-96 my-12">
+      <div className="w-96 my-6 ">
         <Elements stripe={stripePromise}>
           <CheckoutForm booking={data} />
         </Elements>

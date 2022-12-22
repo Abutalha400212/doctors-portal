@@ -5,6 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "react-day-picker/dist/style.css";
 import AuthProvider from "./AuthContext/AuthProvider";
+
 import {
   QueryClient,
   QueryClientProvider,

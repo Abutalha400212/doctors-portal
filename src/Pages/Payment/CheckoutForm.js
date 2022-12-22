@@ -1,13 +1,16 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutForm = ({booking}) => {
-    const {price,name,email} = booking
-    console.log(booking);
+    const {price,name,email,_id} = booking
+    const navigate = useNavigate()
   const stripe = useStripe();
   const elements = useElements();
   const [clientSecret , setClientSecret] = useState('')
   const [cardError, setCardError] = useState('');
+  const [paymantStatus ,setPaymentStatus] = useState(false)
     useEffect(()=>{
         fetch("https://doctors-lab-server.vercel.app/create-payment-intent", {
             method: "POST",
@@ -42,6 +45,7 @@ const CheckoutForm = ({booking}) => {
     } else {
       setCardError('')
     }
+    setPaymentStatus(true)
     const {paymentIntent, error:confirmError} = await stripe.confirmCardPayment(
         clientSecret,
         {
@@ -58,7 +62,24 @@ const CheckoutForm = ({booking}) => {
         setCardError(confirmError.message);
         return
       }
+if(paymentIntent.status === "succeeded"){
+  
+  fetch(`https://doctors-lab-server.vercel.app/updateStatus/${_id}`,{
+    method:"PUT",
+    headers:{
+      "content-type":"application/json"
+    },
+    body:JSON.stringify({status:"paid"})
+  })
+  .then(res=>res.json())
+  .then(data =>{
+    if(data){
+        toast.success("Payment Succcessfully")
+        navigate('/dashboard/dashboard/myappointment')
+    }
+  })
 
+}
 console.log(paymentIntent);
 
   };
@@ -81,9 +102,9 @@ console.log(paymentIntent);
           },
         }}
       />
-      <button className="btn btn-sm btn-primary mt-5" type="submit" disabled={!stripe || !clientSecret}>
+      {paymantStatus ? <p className="mt-5 text-black font-bold">Paid</p> :<button  className="btn btn-sm btn-primary mt-5 text-red-900" type="submit" disabled={!stripe || !clientSecret}>
         Pay
-      </button>
+      </button>}
     </form>
     <p className="text-red-500">{cardError}</p>
     </>

@@ -9,14 +9,11 @@ const DashboardLayout = () => {
   return (
     <div>
       <Navbar />
-      <div className="drawer drawer-mobile">
+      <div className="drawer drawer-mobile ">
         <input id="dashboard" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-content">
-          <Outlet />
-        </div>
-        <div className="drawer-side">
+        <div className="drawer-side ">
           <label htmlFor="dashboard" className="drawer-overlay"></label>
-          <ul className="menu p-4 w-80 text-base-content">
+          <ul className="menu p-7 w-60 bg-base-100  text-black">
             <li>
               <Link to='dashboard/myappointment'>My Appointment</Link>
             </li>
@@ -29,6 +26,10 @@ const DashboardLayout = () => {
            </>}
           </ul>
         </div>
+        <div className="drawer-content  p-7">
+          <Outlet />
+        </div>
+        
       </div>
     </div>
   );

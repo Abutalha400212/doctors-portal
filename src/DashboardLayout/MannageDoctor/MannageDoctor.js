@@ -1,42 +1,40 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
-import DeleteModal from "../../Shared/DeleteModal/DeleteModal";
+import React from "react";
+import { toast } from "react-hot-toast";
 const MannageDoctor = () => {
-  const [deleteAction, setDeleteAction] = useState(null);
   const { data: doctors = [], refetch } = useQuery({
     queryKey: ["doctors"],
     queryFn: async () => {
-      const res = await fetch("https://doctors-lab-server.vercel.app/doctors",{
-        headers:{
-          authorization: `bearer ${localStorage.getItem('accessToken')}`
-        }
+      const res = await fetch("https://doctors-lab-server.vercel.app/doctors", {
+        headers: {
+          authorization: `bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
       const data = await res.json();
       return data;
     },
   });
-  const handleCancelModal = () => {
-    setDeleteAction(null);
-  };
 
   const handleSuccessDeleteAction = (doctor) => {
     fetch(`https://doctors-lab-server.vercel.app/doctors/${doctor._id}`, {
       method: "DELETE",
-      headers:{
-        authorization: `bearer ${localStorage.getItem('accessToken')}`
-      }
+      headers: {
+        authorization: `bearer ${localStorage.getItem("accessToken")}`,
+      },
     })
       .then((res) => res.json())
       .then((data) => {
-        setDeleteAction(null);
-        refetch();
+        if (data) {
+          refetch();
+          toast.success("Doctor Deleted Successfully");
+        }
       });
   };
   return (
     <div className="overflow-x-auto">
       <table className="table w-full">
         <thead>
-          <tr>
+          <tr className="text-center text-black">
             <th></th>
             <th>Image</th>
             <th>Doctor Name</th>
@@ -47,7 +45,7 @@ const MannageDoctor = () => {
         </thead>
         <tbody>
           {doctors.map((doctor, i) => (
-            <tr key={doctor._id}>
+            <tr className="text-center text-black" key={doctor._id}>
               <th>{i + 1}</th>
               <th>
                 <div className="avatar">
@@ -60,25 +58,18 @@ const MannageDoctor = () => {
               <td>{doctor.email}</td>
               <td>{doctor.specialty}</td>
               <td>
-                <label
-                  onClick={() => setDeleteAction(doctor)}
+                <button
+                  onClick={() => handleSuccessDeleteAction(doctor)}
                   htmlFor="doctors-modal"
                   className="btn btn-error btn-sm"
                 >
                   Delete
-                </label>
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {deleteAction && (
-        <DeleteModal
-          deleteAction={deleteAction}
-          handleSuccessDeleteAction={handleSuccessDeleteAction}
-          handleCancelModal={handleCancelModal}
-        />
-      )}
     </div>
   );
 };

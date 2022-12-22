@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const AddDoctor = () => {
@@ -29,6 +30,7 @@ const AddDoctor = () => {
     })
       .then((res) => res.json())
       .then((imgData) => {
+        console.log(imgData);
         const doctor = {
           doctor: data.name,
           email: data.email,
@@ -43,12 +45,13 @@ const AddDoctor = () => {
         },
         body:JSON.stringify(doctor)
        }).then(res => res.json()).then(data=>{
+        toast.success("doctor added Successfully")
         navigate('/dashboard/dashboard/mannagedoctor')
        })
       });
   };
   return (
-    <div className="w-96 p-7">
+    <div className="md:w-[50%] p-7 text-black font-semibold mx-auto">
       <h1>Add a Doctor</h1>
       <div>
         <form onSubmit={handleSubmit(handleAddDoctor)} className="">
